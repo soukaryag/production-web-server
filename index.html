@@ -1,12 +1,63 @@
-<html>
-    <head>
-        <title>My TCP Server</title>
-    </head>
-    <body>
-        <div style="text-align: center; width: 100%">
-            <h1>Welcome >:)</h1>
-            <br>
-            <img src="./soukarya.JPG"/>
-        </div>
-    </body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>TCP Server</title>
+
+    <style>
+        .bloop_button {
+            width: 50vh;
+            height: 50vh;
+            border-radius: 50% !important; 
+            transition: all .05s ease-in-out;
+            border: 0 solid #ffffff00 !important;
+            outline:none;
+            background: #05d1fa !important;
+            box-shadow: 0 10px 18px 0 rgba(0, 0, 0, 0.425);
+        }
+
+        .bloop_button:active {
+            transform: scale(0.95);
+            box-shadow: none;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+        setInterval(function() {
+            $.ajax({
+                url: "./database.txt",
+                async: false,
+                success: function (data){
+                    document.getElementById("score").innerText = "Score: " + data;
+                }
+            });                      
+        }, 100);   
+    </script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+      <div class='container'>
+          <div class="row">
+            <div class='col-sm-6 offset-sm-3' style='text-align: center'>
+                <h1>Click the button!</h1>
+            </div>
+            <div class='col-sm-3' style='text-align:right'>
+                <h2 id="score">Score: [[score]]</h2>
+            </div>
+          </div>
+          <div class="row" style="margin-top: 2em">
+            <div class='col-sm-6 offset-sm-3' style='text-align: center'>
+                <a href="/+1" class="btn btn-success bloop_button"></a>
+            </div>
+          </div>
+      </div>
+
+     
+  </body>
 </html>

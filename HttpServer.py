@@ -15,6 +15,10 @@ class HttpServer(TcpServer):
     }
     blank_line = "\r\n".encode('utf-8')
 
+    def __init__(self, bind_ip="127.0.0.1", bind_port=8000):
+        super(HttpServer, self).__init__()
+        self.bind_ip = bind_ip
+        self.bind_port = bind_port
 
     """
         @Override
@@ -49,16 +53,29 @@ class HttpServer(TcpServer):
             self.blank_line
         )
 
-        return "".join(response).encode('utf-8')
+        return "".join(response)
 
     def handle_GET(self, request):
+        with open('database.txt', 'r') as f:
+            score = f.read()
+
+        score = int(score.strip())
+        if not score or score == '':
+            score = 0
+
+        if request.uri.startswith('/+1'):
+            score += 1
+            with open('database.txt', 'w') as f:
+                f.write(str(score))
+            request.uri = '/'
+
         filename = request.uri.strip('/')
         if filename == '':
             filename = 'index.html'
 
         if os.path.exists(filename):
-            with open(filename, 'rb') as f:
-                response_body = f.read()
+            with open(filename, 'r') as f:
+                response_body = f.read().replace("[[score]]", str(score)).encode('utf-8')
                 
             response_line = self.response_line(status_code=200)
 
@@ -68,7 +85,7 @@ class HttpServer(TcpServer):
                 "Set-Cookie": "username=admin"
             })
         else:
-            response_body = "<h1>404 Not Found</h1>"
+            response_body = b'<h1>404 Not Found</h1>'
             response_line = self.response_line(status_code=404)
             response_headers = self.response_headers()
 
@@ -82,17 +99,26 @@ class HttpServer(TcpServer):
         return b''.join(response)
 
     def handle_POST(self, request):
+        if request.uri.__contains__("/"):
+            response_body = b'point=1'
+        else:
+            response_body = b'point=0'
+
         response_line = self.response_line(status_code=200)
-        response_headers = self.response_headers()
+        response_headers = self.response_headers({
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Connection": "close",
+            "Host": self.bind_ip + ":" + str(self.bind_port)
+        })
 
         response = (
             response_line,
             response_headers,
             self.blank_line,
-            "Posted data to database!"
+            response_body
         )
 
-        return b''.join(response).encode('utf-8')
+        return b''.join(response)
 
     def handle_PUT(self, request):
         pass
@@ -112,7 +138,7 @@ class HttpServer(TcpServer):
             response_body
         )
 
-        return b''.join(response).encode('utf-8')
+        return b''.join(response)
 
 
     """

@@ -21,7 +21,6 @@ class TcpServer:
             print("[+] Connected by", addr)
 
             data = conn.recv(self.packet_size)
-
             response = self.handle_request(data)
 
             conn.sendall(response)
